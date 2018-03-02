@@ -1,1 +1,0 @@
-# spring-boot-camel-demo
