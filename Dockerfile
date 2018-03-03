@@ -1,5 +1,8 @@
-FROM java:8-jre-alpine
+FROM java:8-alpine
 MAINTAINER Jayashankar <jshankarc1@gmail.com>
-ADD target/spring-boot-camel-demo-1.0.jar /app.jar
-CMD ["java", "-jar", "/app.jar"]
-EXPOSE 3001
+VOLUME /tmp
+ARG JAR_FILE
+ADD ./target/${JAR_FILE} /app.jar
+RUN sh -c 'touch /app.jar'
+EXPOSE 31001
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
