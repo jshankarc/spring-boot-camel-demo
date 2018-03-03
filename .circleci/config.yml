@@ -23,20 +23,15 @@ jobs:
  
     steps:
       - checkout
- 
-      # Download and cache dependencies
       - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
- 
+          key: maven-{{ checksum "pom.xml" }}
       - run: mvn dependency:go-offline
- 
       - save_cache:
           paths:
             - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
-        
-      # run tests!
-      - run: mvn clean install dockerfile:build
+          key: maven-{{ checksum "pom.xml" }}
+      - run: mvn package
+      - setup_remote_docker
+      - run: docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - run: docker build --rm=false -t jayashankar/spring-boot-camel-demo:$CIRCLE_SHA1 .
+      - run: docker push jayashankar/spring-boot-camel-demo
